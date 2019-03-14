@@ -2,6 +2,7 @@ package edu.cnm.deepdive.strataphor;
 
 import android.app.Application;
 import com.facebook.stetho.Stetho;
+import edu.cnm.deepdive.android.BaseFluentAsyncTask;
 import edu.cnm.deepdive.strataphor.model.StratAphorDatabase;
 
 public class StratAphorApplication extends Application {
@@ -14,8 +15,12 @@ public class StratAphorApplication extends Application {
     instance = this;
     Stetho.initializeWithDefaults(
         this); // Comment out this line to disable Stetho.
-    StratAphorDatabase.getInstance().getSourceDao().findAll(); // this forces the database
-    // to get created for the first time.
+    new BaseFluentAsyncTask<Void, Void, Void, Void>()
+        .setPerformer((ignore) -> {
+          StratAphorDatabase.getInstance().getSourceDao().findAll();
+          return null;
+        })
+        .execute();
   }
 
   public static StratAphorApplication getInstance() {
